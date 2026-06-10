@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>まとめ売り価格計算</title>
+<style>
+body {
+    font-family: sans-serif;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 15px;
+    background: #f5f5f5;
+}
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+h2 {
+    text-align: center;
+}
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+.result {
+    margin-top: 25px;
+    padding: 15px;
+    background: #eef7ff;
+    border-radius: 8px;
+}
+.price {
+    font-size: 28px;
+    font-weight: bold;
+}
+.small {
+    color: #666;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>まとめ売り価格計算</h2>
+
+    <label>欲しい1個あたり手取り(円)</label>
+    <input type="number" id="unitProfit" value="1500">
+
+    <label>個数</label>
+    <input type="number" id="quantity" value="8">
+
+    <label>送料</label>
+    <select id="shipping">
+        <option value="210">ネコポス 210円</option>
+        <option value="450">宅急便コンパクト 450円</option>
+        <option value="750" selected>60サイズ 750円</option>
+        <option value="850">80サイズ 850円</option>
+        <option value="1050">100サイズ 1050円</option>
+    </select>
+
+    <label>手数料</label>
+    <select id="fee">
+        <option value="0.10" selected>メルカリ 10%</option>
+        <option value="0.05">Yahooフリマ 5%</option>
+    </select>
+
+    <div class="result">
+        <div>推奨出品価格</div>
+        <div class="price" id="salePrice">0円</div>
+
+        <div class="small" id="actualProfit"></div>
+    </div>
+</div>
+
+<script>
+function calc() {
+    const unitProfit = Number(document.getElementById('unitProfit').value);
+    const quantity = Number(document.getElementById('quantity').value);
+    const shipping = Number(document.getElementById('shipping').value);
+    const fee = Number(document.getElementById('fee').value);
+
+    const targetProfit = unitProfit * quantity;
+
+    let salePrice =
+        (targetProfit + shipping) /
+        (1 - fee);
+
+    // 100円単位で切り上げ
+    salePrice = Math.ceil(salePrice / 100) * 100;
+
+    const actualTakeHome =
+        salePrice * (1 - fee) - shipping;
+
+    const actualPerItem =
+        actualTakeHome / quantity;
+
+    document.getElementById('salePrice').textContent =
+        salePrice.toLocaleString() + '円';
+
+    document.getElementById('actualProfit').textContent =
+        '実際の1個あたり手取り：約 ' +
+        Math.floor(actualPerItem).toLocaleString() +
+        '円';
+}
+
+document.querySelectorAll('input,select').forEach(e=>{
+    e.addEventListener('input', calc);
+});
+
+calc();
+</script>
+
+</body>
+</html>
